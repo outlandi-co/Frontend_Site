@@ -6,24 +6,35 @@ import './index.css'; // Global styles
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
+// Load Stripe public key from environment variables
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 
-// Check if the Stripe public key is available
+// Validate the Stripe public key
 if (!stripePublicKey) {
     console.error('Stripe public key not found! Ensure VITE_STRIPE_PUBLIC_KEY is set in the .env file.');
 } else {
     console.log('Stripe public key loaded:', stripePublicKey);
 }
 
-// Initialize Stripe with the public key
-const stripePromise = loadStripe(stripePublicKey);
+// Initialize Stripe
+const stripePromise = stripePublicKey ? loadStripe(stripePublicKey) : null;
+
+if (!stripePromise) {
+    console.error('Stripe initialization failed due to missing public key.');
+}
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <Router>
-      <Elements stripe={stripePromise}>
-        <App />
-      </Elements>
-    </Router>
-  </React.StrictMode>
+    <React.StrictMode>
+        <Router>
+            {stripePromise ? (
+                <Elements stripe={stripePromise}>
+                    <App />
+                </Elements>
+            ) : (
+                <p style={{ color: 'red', textAlign: 'center' }}>
+                    Stripe is not initialized. Please check your public key setup.
+                </p>
+            )}
+        </Router>
+    </React.StrictMode>
 );

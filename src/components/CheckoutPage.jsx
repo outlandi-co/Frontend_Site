@@ -3,8 +3,14 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from './CheckoutForm'; // Import the CheckoutForm component
 
-// Load Stripe with the publishable key from the environment
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+// Load Stripe with the public key from the environment
+const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+
+if (!stripePublicKey) {
+    console.error('Stripe public key not found! Ensure VITE_STRIPE_PUBLIC_KEY is set in the .env file.');
+}
+
+const stripePromise = stripePublicKey ? loadStripe(stripePublicKey) : null;
 
 const CheckoutPage = () => {
     const [clientSecret, setClientSecret] = useState(null);
@@ -26,6 +32,12 @@ const CheckoutPage = () => {
                 }
 
                 const data = await response.json();
+
+                // Validate the clientSecret
+                if (!data.clientSecret) {
+                    throw new Error('Missing clientSecret in response.');
+                }
+
                 setClientSecret(data.clientSecret);
             } catch (err) {
                 setError(`Failed to load payment details. Error: ${err.message}`);
@@ -38,8 +50,21 @@ const CheckoutPage = () => {
         fetchPaymentIntent();
     }, []);
 
-    if (loading) return <p style={{ textAlign: 'center' }}>Loading payment details...</p>;
-    if (error) return <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>;
+    if (!stripePromise) {
+        return (
+            <p style={{ color: 'red', textAlign: 'center' }}>
+                Stripe is not initialized. Please check your public key setup in the environment variables.
+            </p>
+        );
+    }
+
+    if (loading) {
+        return <p style={{ textAlign: 'center' }}>Loading payment details...</p>;
+    }
+
+    if (error) {
+        return <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>;
+    }
 
     return (
         <Elements stripe={stripePromise} options={{ clientSecret }}>
