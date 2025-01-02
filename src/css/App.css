@@ -1,0 +1,54 @@
+/* General container styles */
+.app-container {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers content horizontally */
+  justify-content: center; /* Centers content vertically if height is set */
+  min-height: 100vh; /* Ensure the container fills the full viewport height */
+  background-color: #f8f9fa; /* Light background for contrast */
+}
+
+/* Header styles */
+.app-header {
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+  border-radius: 8px; /* Adds rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+  margin-bottom: 20px; /* Space between header and content */
+  font-size: 1.5rem; /* Make header text larger */
+}
+
+/* Button styles */
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem; /* Consistent button text size */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover and click effects */
+}
+
+/* Button hover state */
+button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+/* Button active state */
+button:active {
+  background-color: #003d80; /* Darker shade for click feedback */
+  transform: scale(0.95); /* Slight shrink effect on click */
+}
+
+/* Accessibility focus state */
+button:focus {
+  outline: 2px solid #0056b3; /* Outline for keyboard navigation */
+  outline-offset: 2px;
+}
