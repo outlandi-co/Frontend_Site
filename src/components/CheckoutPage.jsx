@@ -1,82 +1,128 @@
-import { useEffect, useState } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
-import CheckoutForm from './CheckoutForm'; // Import the CheckoutForm component
-
-// Load Stripe with the public key from the environment
-const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
-
-if (!stripePublicKey) {
-    console.error('Stripe public key not found! Ensure VITE_STRIPE_PUBLIC_KEY is set in the .env file.');
-}
-
-const stripePromise = stripePublicKey ? loadStripe(stripePublicKey) : null;
+// eslint-disable-next-line no-unused-vars
+import React, { useState } from 'react';
+import { useCart } from './context/cartContext'; // Access cart data
+import '../css/CheckoutPage.css'; // Your custom styles
 
 const CheckoutPage = () => {
-    const [clientSecret, setClientSecret] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { cartItems } = useCart();
+    const [shippingInfo, setShippingInfo] = useState({
+        name: '',
+        address: '',
+        city: '',
+        postalCode: '',
+        country: '',
+    });
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    useEffect(() => {
-        const fetchPaymentIntent = async () => {
-            try {
-                const response = await fetch('http://localhost:5001/api/payments/create-payment-intent', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: 5000 }), // Amount in cents (e.g., $50.00)
-                });
+    // Handle input changes for shipping info
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setShippingInfo((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+    };
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Failed to fetch payment intent: ${errorText}`);
-                }
+    // Handle the checkout process
+    const handleCheckout = async () => {
+        setIsProcessing(true);
+        try {
+            // Here, you would typically send the order data to a server for processing
+            console.log('Processing order with the following details:', shippingInfo);
+            console.log('Cart Items:', cartItems);
 
-                const data = await response.json();
+            // Simulate a delay and show success message
+            setTimeout(() => {
+                alert('Order placed successfully!');
+                setIsProcessing(false);
+            }, 2000);
+        } catch (error) {
+            console.error('Error during checkout:', error);
+            setIsProcessing(false);
+        }
+    };
 
-                // Validate the clientSecret
-                if (!data.clientSecret) {
-                    throw new Error('Missing clientSecret in response.');
-                }
+    // Calculate the total price of items in the cart
+    const getTotalPrice = () => {
+        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    };
 
-                setClientSecret(data.clientSecret);
-            } catch (err) {
-                setError(`Failed to load payment details. Error: ${err.message}`);
-                console.error('Error fetching clientSecret:', err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPaymentIntent();
-    }, []);
-
-    if (!stripePromise) {
-        return (
-            <p style={{ color: 'red', textAlign: 'center' }}>
-                Stripe is not initialized. Please check your public key setup in the environment variables.
-            </p>
-        );
-    }
-
-    if (loading) {
-        return <p style={{ textAlign: 'center' }}>Loading payment details...</p>;
-    }
-
-    if (error) {
-        return <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>;
-    }
+    // Debugging: Check if cartItems contains data
+    console.log('Cart Items at checkout:', cartItems);
 
     return (
-        <Elements stripe={stripePromise} options={{ clientSecret }}>
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-                <h1>Checkout</h1>
-                {clientSecret ? (
-                    <CheckoutForm clientSecret={clientSecret} /> // Pass clientSecret to the CheckoutForm
-                ) : (
-                    <p style={{ color: 'red' }}>Unable to load payment form. Please try again later.</p>
-                )}
+        <div className="checkout-page">
+            <h1>Checkout</h1>
+            
+            {/* Shipping Form */}
+            <div className="shipping-form">
+                <label>
+                    Name:
+                    <input
+                        type="text"
+                        name="name"
+                        value={shippingInfo.name}
+                        onChange={handleInputChange}
+                    />
+                </label>
+                <label>
+                    Address:
+                    <input
+                        type="text"
+                        name="address"
+                        value={shippingInfo.address}
+                        onChange={handleInputChange}
+                    />
+                </label>
+                <label>
+                    City:
+                    <input
+                        type="text"
+                        name="city"
+                        value={shippingInfo.city}
+                        onChange={handleInputChange}
+                    />
+                </label>
+                <label>
+                    Postal Code:
+                    <input
+                        type="text"
+                        name="postalCode"
+                        value={shippingInfo.postalCode}
+                        onChange={handleInputChange}
+                    />
+                </label>
+                <label>
+                    Country:
+                    <input
+                        type="text"
+                        name="country"
+                        value={shippingInfo.country}
+                        onChange={handleInputChange}
+                    />
+                </label>
             </div>
-        </Elements>
+
+            {/* Order Summary */}
+            <div className="order-summary">
+                <h3>Order Summary</h3>
+                <ul>
+                    {cartItems.map((item) => (
+                        <li key={item.productId}>
+                            <strong>{item.name}</strong> - {item.quantity} x ${item.price.toFixed(2)}
+                        </li>
+                    ))}
+                </ul>
+                <h3>Total: ${getTotalPrice().toFixed(2)}</h3>
+            </div>
+
+            {/* Checkout Actions */}
+            <div className="checkout-actions">
+                <button onClick={handleCheckout} disabled={isProcessing}>
+                    {isProcessing ? 'Processing...' : 'Place Order'}
+                </button>
+            </div>
+        </div>
     );
 };
 

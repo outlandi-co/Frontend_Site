@@ -1,0 +1,72 @@
+/* CartPage.css */
+.cart-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+}
+
+.cart-total {
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.checkout-button {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.checkout-btn {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.checkout-btn:hover {
+  background-color: #0056b3;
+}
+
+/* CheckoutPage.css */
+.checkout-page {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.shipping-form label {
+  display: block;
+  margin: 10px 0;
+}
+
+.shipping-form input {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.order-summary {
+  margin-top: 20px;
+}
+
+.checkout-actions button {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.checkout-actions button:disabled {
+  background-color: #ccc;
+}

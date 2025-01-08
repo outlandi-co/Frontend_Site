@@ -1,4 +1,5 @@
-import { useState } from 'react';
+// eslint-disable-next-line no-unused-vars
+import React, { useState } from 'react'; // Add `React` explicitly
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -9,7 +10,7 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        
+
         const response = await fetch('/api/users/login', {
             method: 'POST',
             headers: {
@@ -21,8 +22,8 @@ const Login = () => {
         const data = await response.json();
 
         if (response.ok) {
-            localStorage.setItem('token', data.token); // Store the token in localStorage
-            navigate('/profile'); // Redirect to the profile page or dashboard
+            localStorage.setItem('token', data.token);
+            navigate('/profile');
         } else {
             setError(data.message || 'Failed to log in. Please try again.');
         }

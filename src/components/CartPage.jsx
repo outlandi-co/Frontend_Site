@@ -1,89 +1,50 @@
-import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+// CartPage.jsx
+// eslint-disable-next-line no-unused-vars
+import React from 'react';
+import { Link } from 'react-router-dom'; // For navigating to the checkout page
+import { useCart } from './context/cartContext'; // To access cart data
+import '../css/CartPage.css'; // Your custom styles
 
-const CartPage = ({ userId }) => {
-    const [cart, setCart] = useState(null);
-    const [error, setError] = useState(null);
+const CartPage = () => {
+    const { cartItems, removeFromCart } = useCart();
 
-    useEffect(() => {
-        const fetchCart = async () => {
-            if (!userId) {
-                setError('User ID is required to load the cart.');
-                return;
-            }
-
-            try {
-                const response = await fetch(`http://localhost:5001/api/cart/${userId}`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token in the header
-                    },
-                });
-
-                if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(errorMessage || 'Failed to fetch cart.');
-                }
-
-                const data = await response.json();
-                setCart(data);
-            } catch (err) {
-                setError(`Failed to fetch cart. ${err.message}`); // Display the error message
-                console.error('Fetch error:', err.message); // Log the error for debugging
-            }
-        };
-
-        fetchCart();
-    }, [userId]);
-
-    const handleRemoveFromCart = async (itemId) => {
-        try {
-            const response = await fetch(`http://localhost:5001/api/cart/${itemId}/remove`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token in the header
-                },
-                body: JSON.stringify({ itemId }),
-            });
-
-            if (response.ok) {
-                const updatedCart = await response.json();
-                setCart(updatedCart); // Update the cart after removal
-            } else {
-                throw new Error('Failed to remove item from cart.');
-            }
-        } catch (error) {
-            console.error('Remove error:', error.message);
-            setError('Failed to remove item from cart.');
-        }
+    const handleRemoveFromCart = (productId) => {
+        removeFromCart(productId);
     };
 
-    if (!cart) {
-        return <p>Loading cart...</p>;
-    }
+    const getTotalPrice = () => {
+        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    };
 
-    if (error) {
-        return <p style={{ color: 'red' }}>{error}</p>;
+    if (cartItems.length === 0) {
+        return <p>Your cart is empty.</p>;
     }
 
     return (
-        <div>
+        <div className="cart-page">
             <h1>Your Cart</h1>
             <ul>
-                {cart.items.map((item) => (
-                    <li key={item._id}>
-                        {item.productId.name} - {item.quantity} x ${item.productId.price} = ${item.totalPrice}
-                        <button onClick={() => handleRemoveFromCart(item._id)}>Remove</button>
+                {cartItems.map((item) => (
+                    <li key={item.productId} className="cart-item">
+                        <div>
+                            <strong>{item.name}</strong>
+                            <p>Price: ${item.price.toFixed(2)}</p>
+                            <p>Quantity: {item.quantity}</p>
+                            <button onClick={() => handleRemoveFromCart(item.productId)}>Remove</button>
+                        </div>
                     </li>
                 ))}
             </ul>
-            <h3>Total: ${cart.totalAmount}</h3>
+            <div className="cart-total">
+                <h3>Total: ${getTotalPrice().toFixed(2)}</h3>
+            </div>
+            <div className="checkout-button">
+                <Link to="/checkout">
+                    <button className="checkout-btn">Proceed to Checkout</button>
+                </Link>
+            </div>
         </div>
     );
-};
-
-CartPage.propTypes = {
-    userId: PropTypes.string.isRequired,
 };
 
 export default CartPage;
