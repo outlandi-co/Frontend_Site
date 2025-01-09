@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "vite" 
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^3.1.1",
@@ -15,6 +16,7 @@
     "axios": "^1.7.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router": "^7.1.1",
     "react-router-dom": "^7.1.1",
     "react-signature-canvas": "^1.0.6",
     "react-stripe-js": "^1.1.5",

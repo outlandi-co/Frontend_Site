@@ -1,10 +1,11 @@
+// CheckoutPage.jsx
 // eslint-disable-next-line no-unused-vars
 import React, { useState } from 'react';
-import { useCart } from './context/cartContext'; // Access cart data
+import { useCart } from '../components/context/useCart'; // Correct import from useCart.js
 import '../css/CheckoutPage.css'; // Your custom styles
 
 const CheckoutPage = () => {
-    const { cartItems } = useCart();
+    const { cartItems } = useCart();  // Access cart data from CartContext
     const [shippingInfo, setShippingInfo] = useState({
         name: '',
         address: '',
@@ -49,6 +50,11 @@ const CheckoutPage = () => {
 
     // Debugging: Check if cartItems contains data
     console.log('Cart Items at checkout:', cartItems);
+
+    // If cartItems is empty, show an empty cart message
+    if (cartItems.length === 0) {
+        return <p>Your cart is empty. Please add some products to proceed with the checkout.</p>;
+    }
 
     return (
         <div className="checkout-page">

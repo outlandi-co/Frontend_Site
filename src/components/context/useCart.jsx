@@ -1,8 +1,5 @@
 // useCart.js
 import { useContext } from 'react';
-import { CartContext } from './cartContext';
+import { CartContext } from './cartContext'; // Import CartContext from cartContext.jsx
 
-// Custom Hook to Use Cart Context
-const useCart = () => useContext(CartContext);
-
-export default useCart;
+export const useCart = () => useContext(CartContext); // Custom hook to access CartContext

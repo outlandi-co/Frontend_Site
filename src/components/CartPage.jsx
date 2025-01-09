@@ -1,23 +1,25 @@
 // CartPage.jsx
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { Link } from 'react-router-dom'; // For navigating to the checkout page
-import { useCart } from './context/cartContext'; // To access cart data
-import '../css/CartPage.css'; // Your custom styles
+import { Link } from 'react-router-dom';
+import { useCart } from './context/useCart';  // Correct import from useCart.js
+import '../css/CartPage.css';
 
 const CartPage = () => {
-    const { cartItems, removeFromCart } = useCart();
+    const { cartItems, removeFromCart } = useCart();  // Access cart data
+
+    console.log('Cart Items:', cartItems);  // Log cartItems to see if they are correctly populated
 
     const handleRemoveFromCart = (productId) => {
-        removeFromCart(productId);
+        removeFromCart(productId);  // Remove item from cart
     };
 
     const getTotalPrice = () => {
-        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);  // Calculate total price
     };
 
     if (cartItems.length === 0) {
-        return <p>Your cart is empty.</p>;
+        return <p>Your cart is empty.</p>;  // Display message if no items in cart
     }
 
     return (
