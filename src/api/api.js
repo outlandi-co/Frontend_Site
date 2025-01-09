@@ -2,9 +2,9 @@ import axios from 'axios';
 
 // Create an Axios instance with default configurations
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'https://backend-server-nlr5.onrender.com/api', // Fallback to the production URL if not set in environment
+    baseURL: import.meta.env.VITE_API_URL || 'https://backend-server-nlr5.onrender.com/api', // Fallback to production URL if not set in environment
     headers: {
-        'Content-Type': 'application/json', // Default Content-Type
+        'Content-Type': 'application/json', // Default Content-Type for JSON requests
     },
 });
 
@@ -18,8 +18,9 @@ api.interceptors.request.use(
         return config; // Return the modified request config
     },
     (error) => {
-        console.error('[API] Request error:', error); // Log request errors
-        return Promise.reject(error); // Propagate the error
+        // Log and propagate request errors
+        console.error('[API] Request error:', error);
+        return Promise.reject(error);
     }
 );
 
@@ -29,18 +30,21 @@ api.interceptors.response.use(
     (error) => {
         if (error.response) {
             const { status, data } = error.response;
+
+            // Handle 401 Unauthorized errors
             if (status === 401) {
                 console.warn('[API] Unauthorized - redirecting to login.');
                 localStorage.removeItem('token'); // Clear invalid token
                 window.location.href = '/login'; // Redirect to login page
             } else {
+                // Log other API errors
                 console.error(`[API] Error (${status}):`, data?.message || error.message);
             }
         } else if (error.request) {
-            // Handle cases where the request was made but no response was received
+            // Log errors where no response was received
             console.error('[API] No response received:', error.request);
         } else {
-            // General errors during setting up the request
+            // Log errors during the request setup
             console.error('[API] Error during setup:', error.message);
         }
 
@@ -58,6 +62,11 @@ export const setAuthToken = (token) => {
         localStorage.removeItem('token'); // Clear token from localStorage
         delete api.defaults.headers.Authorization; // Remove token from Axios instance
     }
+};
+
+// Utility function to dynamically update the base URL (optional, for flexibility)
+export const updateBaseURL = (newBaseURL) => {
+    api.defaults.baseURL = newBaseURL;
 };
 
 export default api;

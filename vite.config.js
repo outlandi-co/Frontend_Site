@@ -1,7 +1,14 @@
-// vite.config.js
 import { defineConfig } from 'vite';
 
+// This will ensure your VITE_API_URL and other variables are correctly read by Vite
 export default defineConfig({
-  // Optional: Add custom .env file loading here (but not necessary)
-  // Vite already loads .env files automatically
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://backend-server-nlr5.onrender.com',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 });
