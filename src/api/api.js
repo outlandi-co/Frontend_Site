@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an Axios instance with default configurations
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'https://backend-server-nlr5.onrender.com/api', // Fallback to production URL if not set in environment
+    baseURL: import.meta.env.VITE_API_URL, // Ensure this pulls directly from the environment variable for the backend
     headers: {
         'Content-Type': 'application/json', // Default Content-Type for JSON requests
     },
@@ -64,7 +64,7 @@ export const setAuthToken = (token) => {
     }
 };
 
-// Utility function to dynamically update the base URL (optional, for flexibility)
+// Optional: Utility function to dynamically update the base URL (for flexibility)
 export const updateBaseURL = (newBaseURL) => {
     api.defaults.baseURL = newBaseURL;
 };
