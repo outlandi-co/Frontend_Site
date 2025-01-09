@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an Axios instance with default configurations
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL, // This should be set via environment variables
+    baseURL: import.meta.env.VITE_API_URL || 'https://backend-server-nlr5.onrender.com/api', // Fallback to the production URL if not set in environment
     headers: {
         'Content-Type': 'application/json', // Default Content-Type
     },
