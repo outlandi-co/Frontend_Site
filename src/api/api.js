@@ -2,11 +2,12 @@ import axios from 'axios';
 
 // Create an Axios instance with default configurations
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL, // Ensure this pulls directly from the environment variable for the backend
-    headers: {
-        'Content-Type': 'application/json', // Default Content-Type for JSON requests
-    },
+  baseURL: import.meta.env.VITE_API_URL, // This should fetch the URL from .env file
+  headers: {
+      'Content-Type': 'application/json',
+  },
 });
+
 
 // Add a request interceptor to include the token in headers
 api.interceptors.request.use(

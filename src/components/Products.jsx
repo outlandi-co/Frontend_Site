@@ -12,7 +12,8 @@ const Products = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:5001/api/products');
+                // Updated URL to the Render backend URL
+                const response = await axios.get('https://backend-server-1wsz.onrender.com/api/products');
                 setProducts(response.data);
                 setLoading(false);
             } catch (error) {
