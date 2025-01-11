@@ -7,6 +7,7 @@ import CheckoutPage from './components/CheckoutPage';
 import OrderConfirmation from './components/OrderConfirmation';
 import CartWidget from './components/CartWidget';
 import CartProvider from './components/context/cartContext'; // Import CartProvider
+import Register from './components/Register'; // Import the Register component
 import Login from './components/Login'; // Import the Login page
 import ForgotPassword from './components/ForgotPassword'; // Import the Forgot Password page
 import ResetPassword from './components/ResetPassword'; // Import the Reset Password page
@@ -40,7 +41,7 @@ const App = () => {
                         <Route path="/checkout" element={<CheckoutPage />} />
                         <Route path="/order-confirmation" element={<OrderConfirmation />} />
                         <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<div>Register</div>} />
+                        <Route path="/register" element={<Register />} /> {/* Register route */}
                         <Route path="/forgot-password" element={<ForgotPassword />} />
                         <Route path="/reset-password" element={<ResetPassword />} />
                     </Routes>

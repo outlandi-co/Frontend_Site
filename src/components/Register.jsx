@@ -1,89 +1,95 @@
-/* eslint-disable no-unused-vars */
-// src/components/Register.jsx
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// eslint-disable-next-line no-unused-vars
+import React, { useState } from 'react';
 
 const Register = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Loading state to manage form submission
-  const navigate = useNavigate();
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setLoading(true); // Set loading to true when the form is submitted
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    // Form validation (simple check)
-    if (!email.includes('@') || password.length < 6) {
-      setError('Please enter a valid email and a password with at least 6 characters.');
-      setLoading(false);
-      return;
-    }
+        if (password !== confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
 
-    try {
-      const response = await fetch('/api/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
+        setError('');
+        setMessage('');
 
-      const data = await response.json();
+        try {
+            const response = await fetch('http://localhost:5001/api/users/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password }),
+            });
 
-      if (response.ok) {
-        alert('Registration successful! Please log in.');
-        navigate('/login'); // Redirect to login page
-      } else {
-        setError(data.message || 'Failed to register. Please try again.');
-      }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-    } finally {
-      setLoading(false); // Set loading to false after the request is complete
-    }
-  };
+            const data = await response.json();
 
-  return (
-    <div>
-      <h2>Register</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleRegister}>
+            if (response.ok) {
+                setMessage('Registration successful! Please log in.');
+            } else {
+                setError(data.message || 'Failed to register');
+            }
+        // eslint-disable-next-line no-unused-vars
+        } catch (err) {
+            setError('An error occurred during registration');
+        }
+    };
+
+    return (
         <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+            <h2>Register</h2>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {message && <p style={{ color: 'green' }}>{message}</p>}
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <label>Name:</label>
+                    <input
+                        type="text"
+                        placeholder="Your name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Email:</label>
+                    <input
+                        type="email"
+                        placeholder="Your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Password:</label>
+                    <input
+                        type="password"
+                        placeholder="Your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Confirm Password:</label>
+                    <input
+                        type="password"
+                        placeholder="Confirm your password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                    />
+                </div>
+                <button type="submit">Register</button>
+            </form>
         </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Registering...' : 'Register'}
-        </button>
-      </form>
-    </div>
-  );
+    );
 };
 
 export default Register;
