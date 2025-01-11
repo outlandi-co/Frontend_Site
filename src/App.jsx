@@ -4,9 +4,12 @@ import { Routes, Route } from 'react-router-dom';
 import Products from './components/Products';
 import CartPage from './components/CartPage';
 import CheckoutPage from './components/CheckoutPage';
-import OrderConfirmation from './components/OrderConfirmation';  // Import the order confirmation page
+import OrderConfirmation from './components/OrderConfirmation'; // Import the order confirmation page
 import CartWidget from './components/CartWidget';
-import CartProvider from './components/context/cartContext';  // Import CartProvider
+import CartProvider from './components/context/cartContext'; // Import CartProvider
+import Login from './components/Login'; // Import the Login page
+import ForgotPassword from './components/ForgotPassword'; // Import the Forgot Password page
+import ResetPassword from './components/ResetPassword'; // Import the Reset Password page
 import './css/Products.css';
 
 const App = () => {
@@ -26,11 +29,25 @@ const App = () => {
                 <CartWidget />
                 <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
                     <Routes>
+                        {/* Homepage Route */}
                         <Route path="/" element={<h2>Welcome to Outlandico</h2>} />
+                        
+                        {/* Products Page Route */}
                         <Route path="/products" element={<Products />} />
+                        
+                        {/* Cart Page Route */}
                         <Route path="/cart" element={<CartPage />} />
+                        
+                        {/* Checkout Page Route */}
                         <Route path="/checkout" element={<CheckoutPage />} />
-                        <Route path="/order-confirmation" element={<OrderConfirmation />} /> {/* Order Confirmation route */}
+                        
+                        {/* Order Confirmation Route */}
+                        <Route path="/order-confirmation" element={<OrderConfirmation />} />
+                        
+                        {/* Routes for Login, Forgot Password, and Reset Password */}
+                        <Route path="/login" element={<Login />} /> {/* Login route */}
+                        <Route path="/forgot-password" element={<ForgotPassword />} /> {/* Forgot Password route */}
+                        <Route path="/reset-password" element={<ResetPassword />} /> {/* Reset Password route */}
                     </Routes>
                 </main>
             </div>
