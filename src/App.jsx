@@ -17,6 +17,7 @@ const App = () => {
     return (
         <CartProvider>
             <div>
+                {/* Header Section */}
                 <header
                     style={{
                         textAlign: 'center',
@@ -27,23 +28,37 @@ const App = () => {
                 >
                     <h1>Welcome to Outlandico</h1>
                     <nav>
-                        <Link to="/login" style={{ margin: '0 10px' }}>Login</Link>
-                        <Link to="/register" style={{ margin: '0 10px' }}>Register</Link>
-                        <Link to="/forgot-password" style={{ margin: '0 10px' }}>Forgot Password</Link>
+                        <Link to="/" style={{ margin: '0 10px', color: '#fff' }}>Home</Link>
+                        <Link to="/products" style={{ margin: '0 10px', color: '#fff' }}>Products</Link>
+                        <Link to="/cart" style={{ margin: '0 10px', color: '#fff' }}>Cart</Link>
+                        <Link to="/login" style={{ margin: '0 10px', color: '#fff' }}>Login</Link>
+                        <Link to="/register" style={{ margin: '0 10px', color: '#fff' }}>Register</Link>
+                        <Link to="/forgot-password" style={{ margin: '0 10px', color: '#fff' }}>Forgot Password</Link>
                     </nav>
                 </header>
+
+                {/* Cart Widget */}
                 <CartWidget />
+
+                {/* Main Content */}
                 <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
                     <Routes>
+                        {/* Default Home Page */}
                         <Route path="/" element={<h2>Welcome to Outlandico</h2>} />
+                        
+                        {/* Application Routes */}
                         <Route path="/products" element={<Products />} />
                         <Route path="/cart" element={<CartPage />} />
                         <Route path="/checkout" element={<CheckoutPage />} />
                         <Route path="/order-confirmation" element={<OrderConfirmation />} />
+                        
+                        {/* Authentication Routes */}
                         <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} /> {/* Register route */}
+                        <Route path="/register" element={<Register />} />
                         <Route path="/forgot-password" element={<ForgotPassword />} />
-                        <Route path="/reset-password" element={<ResetPassword />} />
+                        
+                        {/* Password Reset with Dynamic Token */}
+                        <Route path="/reset-password/:token" element={<ResetPassword />} />
                     </Routes>
                 </main>
             </div>
