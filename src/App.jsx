@@ -57,8 +57,8 @@ const App = () => {
                         <Route path="/register" element={<Register />} />
                         <Route path="/forgot-password" element={<ForgotPassword />} />
                         
-                        {/* Password Reset with Dynamic Token */}
-                        <Route path="/reset-password/:token" element={<ResetPassword />} />
+                        {/* Password Reset Route with Token from URL */}
+                        <Route path="/reset-password" element={<ResetPassword />} />
                     </Routes>
                 </main>
             </div>
