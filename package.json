@@ -8,17 +8,17 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "vite" 
+    "start": "vite"
   },
   "dependencies": {
-    "@stripe/react-stripe-js": "^3.1.1",
+    "@stripe/react-stripe-js": "^3.0.0",
     "@stripe/stripe-js": "^5.4.0",
     "axios": "^1.7.9",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-router": "^7.1.1",
-    "react-router-dom": "^7.1.1",
-    "react-signature-canvas": "^1.0.6",
+    "react-router-dom": "^7.1.2",
+    "react-signature-canvas": "^1.0.7",
     "react-stripe-js": "^1.1.5",
     "socket.io-client": "^4.8.1"
   },
