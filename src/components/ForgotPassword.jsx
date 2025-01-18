@@ -4,19 +4,18 @@ import { useNavigate } from 'react-router-dom';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
-  const [token, setToken] = useState('');
-  const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false); // Track if the email was sent
+  const [showResetFields, setShowResetFields] = useState(false); // New state for showing token and new password fields
+  const [token, setToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const navigate = useNavigate();
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError('Please enter a valid email address.');
@@ -36,7 +35,7 @@ const ForgotPassword = () => {
       if (response.ok) {
         setMessage('Password reset email sent. Please check your inbox.');
         setError('');
-        setEmailSent(true); // Update state to show reset password form
+        setShowResetFields(false); // Hide reset fields when requesting email
       } else {
         setError(data.message || 'Failed to send reset email. Please try again.');
         setMessage('');
@@ -54,12 +53,6 @@ const ForgotPassword = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (!token || !newPassword) {
-      setError('Both token and new password are required.');
-      setLoading(false);
-      return;
-    }
-
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/reset-password`, {
         method: 'POST',
@@ -72,7 +65,7 @@ const ForgotPassword = () => {
       if (response.ok) {
         setMessage('Password has been successfully reset.');
         setError('');
-        setTimeout(() => navigate('/login'), 5000);
+        navigate('/login'); // Redirect to login after successful reset
       } else {
         setError(data.message || 'Failed to reset password. Please try again.');
         setMessage('');
@@ -86,18 +79,14 @@ const ForgotPassword = () => {
     }
   };
 
-  const handleBackToLogin = () => {
-    navigate('/login');
-  };
-
   return (
     <div style={{ maxWidth: '400px', margin: '0 auto', textAlign: 'center' }}>
       <h2>Forgot Password</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {message && <p style={{ color: 'green' }}>{message}</p>}
 
-      {/* Forgot Password Form */}
-      {!emailSent && (
+      {/* Request Email Section */}
+      {!showResetFields && (
         <form onSubmit={handleForgotPassword}>
           <div style={{ marginBottom: '10px' }}>
             <label htmlFor="email">Email:</label>
@@ -128,8 +117,8 @@ const ForgotPassword = () => {
         </form>
       )}
 
-      {/* Reset Password Form */}
-      {emailSent && (
+      {/* Reset Password Section */}
+      {showResetFields && (
         <form onSubmit={handleResetPassword}>
           <div style={{ marginBottom: '10px' }}>
             <label htmlFor="token">Token:</label>
@@ -171,21 +160,6 @@ const ForgotPassword = () => {
           </button>
         </form>
       )}
-
-      <button
-        onClick={handleBackToLogin}
-        style={{
-          marginTop: '10px',
-          padding: '10px 20px',
-          backgroundColor: '#6c757d',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer',
-        }}
-      >
-        Back to Login
-      </button>
     </div>
   );
 };
