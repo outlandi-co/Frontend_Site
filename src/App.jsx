@@ -58,9 +58,10 @@ const App = () => {
                         <Route path="/forgot-password" element={<ForgotPassword />} />
                         
                         {/* Password Reset Route with Token from URL */}
-                        <Route path="/forgot-password" element={<ForgotPassword />} />
                         <Route path="/reset-password" element={<ResetPassword />} />
-                        <Route path="*" element={<h2>Page Not Found</h2>} /> {/* Fallback for invalid routes */}
+                        
+                        {/* Fallback for invalid routes */}
+                        <Route path="*" element={<h2>Page Not Found</h2>} />
                     </Routes>
                 </main>
             </div>

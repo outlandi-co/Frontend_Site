@@ -1,78 +1,82 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const ResetPassword = () => {
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
-    const [message, setMessage] = useState('');
-    const location = useLocation();
-    const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
-    // Extract token from URL
-    const token = new URLSearchParams(location.search).get('token');
+  const token = searchParams.get('token'); // Retrieve the token from the URL
+  const [newPassword, setNewPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handlePasswordReset = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, newPassword }),
+      });
 
-        if (!newPassword || !confirmPassword) {
-            setError('Both fields are required.');
-            return;
-        }
+      const data = await response.json();
 
-        if (newPassword !== confirmPassword) {
-            setError('Passwords do not match.');
-            return;
-        }
+      if (response.ok) {
+        setMessage('Password has been successfully reset.');
+        setError('');
+        setTimeout(() => navigate('/login'), 5000); // Redirect to login after 5 seconds
+      } else {
+        setError(data.message || 'Failed to reset password. Please try again.');
+        setMessage('');
+      }
+    } catch (err) {
+      console.error('Error occurred while resetting password:', err);
+      setError('Error occurred while resetting password. Please try again.');
+      setMessage('');
+    }
+  };
 
-        try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/reset-password`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token, newPassword }),
-            });
-                                    
-            const data = await response.json();
+  // If no token is present, redirect to the forgot password page
+  if (!token) {
+    setTimeout(() => navigate('/forgot-password'), 500);
+    return <p>Redirecting...</p>;
+  }
 
-            if (response.ok) {
-                setMessage('Password reset successful. Redirecting to login...');
-                setTimeout(() => navigate('/login'), 3000);
-            } else {
-                setError(data.message || 'Error resetting password.');
-            }
-        } catch (err) {
-            console.error('Error resetting password:', err);
-            setError('Unexpected error. Please try again.');
-        }
-    };
-
-    return (
-        <div>
-            <h2>Reset Password</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {message && <p style={{ color: 'green' }}>{message}</p>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>New Password:</label>
-                    <input
-                        type="password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <label>Confirm Password:</label>
-                    <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                </div>
-                <button type="submit">Reset Password</button>
-            </form>
+  return (
+    <div style={{ maxWidth: '400px', margin: '0 auto', textAlign: 'center' }}>
+      <h2>Reset Password</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {message && <p style={{ color: 'green' }}>{message}</p>}
+      <form onSubmit={handlePasswordReset}>
+        <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="newPassword">New Password:</label>
+          <input
+            id="newPassword"
+            type="password"
+            placeholder="Enter your new password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+            style={{ width: '100%', padding: '8px', margin: '8px 0' }}
+          />
         </div>
-    );
+        <button
+          type="submit"
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#28a745',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
+          Reset Password
+        </button>
+      </form>
+    </div>
+  );
 };
 
 export default ResetPassword;
