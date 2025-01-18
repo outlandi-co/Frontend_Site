@@ -23,17 +23,18 @@ const App = () => {
                         textAlign: 'center',
                         padding: '20px',
                         background: '#1a1a1a',
-                        color: 'white',
+                        color: '#fff',
+                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
                     }}
                 >
                     <h1>Welcome to Outlandico</h1>
                     <nav>
-                        <Link to="/" style={{ margin: '0 10px', color: '#fff' }}>Home</Link>
-                        <Link to="/products" style={{ margin: '0 10px', color: '#fff' }}>Products</Link>
-                        <Link to="/cart" style={{ margin: '0 10px', color: '#fff' }}>Cart</Link>
-                        <Link to="/login" style={{ margin: '0 10px', color: '#fff' }}>Login</Link>
-                        <Link to="/register" style={{ margin: '0 10px', color: '#fff' }}>Register</Link>
-                        <Link to="/forgot-password" style={{ margin: '0 10px', color: '#fff' }}>Forgot Password</Link>
+                        <Link to="/" style={{ margin: '0 10px', color: '#fff', textDecoration: 'none' }}>Home</Link>
+                        <Link to="/products" style={{ margin: '0 10px', color: '#fff', textDecoration: 'none' }}>Products</Link>
+                        <Link to="/cart" style={{ margin: '0 10px', color: '#fff', textDecoration: 'none' }}>Cart</Link>
+                        <Link to="/login" style={{ margin: '0 10px', color: '#fff', textDecoration: 'none' }}>Login</Link>
+                        <Link to="/register" style={{ margin: '0 10px', color: '#fff', textDecoration: 'none' }}>Register</Link>
+                        <Link to="/forgot-password" style={{ margin: '0 10px', color: '#fff', textDecoration: 'none' }}>Forgot Password</Link>
                     </nav>
                 </header>
 
@@ -61,6 +62,19 @@ const App = () => {
                         <Route path="/reset-password" element={<ResetPassword />} />
                     </Routes>
                 </main>
+
+                {/* Footer Section */}
+                <footer
+                    style={{
+                        textAlign: 'center',
+                        padding: '10px',
+                        background: '#1a1a1a',
+                        color: '#fff',
+                        marginTop: '20px',
+                    }}
+                >
+                    <p>© {new Date().getFullYear()} Outlandico. All rights reserved.</p>
+                </footer>
             </div>
         </CartProvider>
     );
