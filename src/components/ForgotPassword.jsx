@@ -1,22 +1,24 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
-  const [token, setToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false); // Track if the email was sent
+  const location = useLocation();
   const navigate = useNavigate();
+
+  // Extract token from URL query parameters
+  const token = new URLSearchParams(location.search).get('token');
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Basic email validation
+    // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError('Please enter a valid email address.');
@@ -36,7 +38,6 @@ const ForgotPassword = () => {
       if (response.ok) {
         setMessage('Password reset email sent. Please check your inbox.');
         setError('');
-        setEmailSent(true); // Update state to show reset password form
       } else {
         setError(data.message || 'Failed to send reset email. Please try again.');
         setMessage('');
@@ -54,12 +55,6 @@ const ForgotPassword = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (!token || !newPassword) {
-      setError('Both token and new password are required.');
-      setLoading(false);
-      return;
-    }
-
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/reset-password`, {
         method: 'POST',
@@ -70,7 +65,7 @@ const ForgotPassword = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage('Password has been successfully reset.');
+        setMessage('Password reset successful! You can now log in.');
         setError('');
         setTimeout(() => navigate('/login'), 5000);
       } else {
@@ -86,18 +81,14 @@ const ForgotPassword = () => {
     }
   };
 
-  const handleBackToLogin = () => {
-    navigate('/login');
-  };
-
   return (
     <div style={{ maxWidth: '400px', margin: '0 auto', textAlign: 'center' }}>
       <h2>Forgot Password</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {message && <p style={{ color: 'green' }}>{message}</p>}
 
-      {/* Forgot Password Form */}
-      {!emailSent && (
+      {!token ? (
+        // Show email form if no token is present
         <form onSubmit={handleForgotPassword}>
           <div style={{ marginBottom: '10px' }}>
             <label htmlFor="email">Email:</label>
@@ -126,23 +117,9 @@ const ForgotPassword = () => {
             {loading ? 'Sending...' : 'Send Reset Email'}
           </button>
         </form>
-      )}
-
-      {/* Reset Password Form */}
-      {emailSent && (
+      ) : (
+        // Show reset password form if token is present
         <form onSubmit={handleResetPassword}>
-          <div style={{ marginBottom: '10px' }}>
-            <label htmlFor="token">Token:</label>
-            <input
-              id="token"
-              type="text"
-              placeholder="Enter your reset token"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              required
-              style={{ width: '100%', padding: '8px', margin: '8px 0' }}
-            />
-          </div>
           <div style={{ marginBottom: '10px' }}>
             <label htmlFor="newPassword">New Password:</label>
             <input
@@ -173,7 +150,7 @@ const ForgotPassword = () => {
       )}
 
       <button
-        onClick={handleBackToLogin}
+        onClick={() => navigate('/login')}
         style={{
           marginTop: '10px',
           padding: '10px 20px',
