@@ -6,7 +6,7 @@ export default defineConfig({
             '/api': {
                 target: 'https://backend-server-otcb.onrender.com',
                 changeOrigin: true,
-                secure: false,
+                rewrite: (path) => path.replace(/^\/api/, ''), // Removes /api prefix
             },
         },
     },
