@@ -1,3 +1,6 @@
+// eslint-disable-next-line no-unused-vars
+import React from 'react';
+
 // Updated Frontend Code for Password Reset
 import { useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
