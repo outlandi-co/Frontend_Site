@@ -1,3 +1,4 @@
+// Updated Frontend Code for Password Reset
 import { useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
 
