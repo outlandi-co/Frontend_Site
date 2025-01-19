@@ -10,6 +10,8 @@ const ResetPassword = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    console.log('Using API URL:', import.meta.env.VITE_API_URL); // Debugging API URL
+
     const handleResetPassword = async (e) => {
         e.preventDefault();
         setLoading(true);
