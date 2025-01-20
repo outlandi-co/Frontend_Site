@@ -7,10 +7,10 @@ import CheckoutPage from './components/CheckoutPage';
 import OrderConfirmation from './components/OrderConfirmation';
 import CartWidget from './components/CartWidget';
 import CartProvider from './components/context/cartContext'; // Import CartProvider
-import Register from './components/Register'; // Import the Register component
-import Login from './components/Login'; // Import the Login page
-import ForgotPassword from './components/ForgotPassword'; // Import the Forgot Password page
-import ResetPassword from './components/ResetPassword'; // Import the Reset Password page
+import Register from './components/Register'; // Import Register component
+import Login from './components/Login'; // Import Login component
+import ForgotPassword from './components/ForgotPassword'; // Import Forgot Password component
+import ResetPassword from './components/ResetPassword'; // Import Reset Password component
 import './css/Products.css';
 
 const App = () => {
@@ -57,7 +57,7 @@ const App = () => {
                         <Route path="/register" element={<Register />} />
                         <Route path="/forgot-password" element={<ForgotPassword />} />
                         
-                        {/* Password Reset Route with Token from URL */}
+                        {/* Password Reset Route */}
                         <Route path="/reset-password" element={<ResetPassword />} />
                     </Routes>
                 </main>
