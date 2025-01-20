@@ -6,8 +6,8 @@ const ResetPassword = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    const token = searchParams.get('token'); // Get the token from query parameters
-    const userId = searchParams.get('userId'); // Get the userId from query parameters
+    const token = searchParams.get('token'); // Token from URL
+    const userId = searchParams.get('userId'); // User ID from URL
     const [newPassword, setNewPassword] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
@@ -39,8 +39,8 @@ const ResetPassword = () => {
             if (response.ok) {
                 setMessage('Password has been successfully reset.');
                 setError('');
-                setNewPassword(''); // Clear input field
-                setTimeout(() => navigate('/login'), 3000); // Redirect to login after 3 seconds
+                setNewPassword(''); // Clear the input field
+                setTimeout(() => navigate('/login'), 3000); // Redirect after 3 seconds
             } else {
                 setError(data.message || 'Failed to reset password. Please try again.');
             }
