@@ -8,15 +8,17 @@ const ForgotPassword = () => {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isResetMode, setIsResetMode] = useState(false); // Determine if we're in reset mode
+  const [isResetMode, setIsResetMode] = useState(false); // Determine if in reset mode
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // Check if there's a token in the query parameters
+    // Check if there's a token and userId in the query parameters
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
-    if (token) {
+    const userId = params.get('userId');
+
+    if (token && userId) {
       setIsResetMode(true);
     }
   }, [location.search]);
@@ -56,9 +58,16 @@ const ForgotPassword = () => {
 
     const params = new URLSearchParams(location.search);
     const token = params.get('token'); // Get the token from the URL
+    const userId = params.get('userId'); // Get the userId from the URL
+
+    if (!token || !userId) {
+      setError('Invalid or missing token and user ID.');
+      setLoading(false);
+      return;
+    }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/reset-password`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/reset-password/${userId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword }),
