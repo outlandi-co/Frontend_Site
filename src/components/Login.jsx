@@ -11,7 +11,8 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:5001/api/users/login', {
+            // Use the API URL from the environment variable
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
@@ -21,12 +22,16 @@ const Login = () => {
 
             if (response.ok) {
                 setMessage('Login successful!');
-                // Redirect to another page or handle successful login logic
+                setError('');
+                // Handle successful login logic here, e.g., store token or redirect
             } else {
                 setError(data.message || 'Failed to log in');
+                setMessage('');
             }
         } catch (err) {
+            console.error('Error occurred while logging in:', err);
             setError('An error occurred while logging in');
+            setMessage('');
         }
     };
 
