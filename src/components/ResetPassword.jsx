@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 const ResetPassword = () => {
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token'); // Get the token from query parameters
+    const userId = searchParams.get('userId'); // Get the userId from query parameters
     const [newPassword, setNewPassword] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
@@ -14,28 +15,26 @@ const ResetPassword = () => {
 
     const handleResetPassword = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError('');
-        setMessage('');
-
-        if (!token) {
-            setError('Invalid or missing reset token.');
-            setLoading(false);
+    
+        if (!token || !userId) {
+            setError('Invalid or missing reset token or user ID.');
             return;
         }
-
+    
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/reset-password`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token, newPassword }),
-            });
-
+            const response = await fetch(
+                `${import.meta.env.VITE_API_URL}/api/users/reset-password/${userId}`, // Include userId in the URL
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token, newPassword }),
+                }
+            );
+    
             const data = await response.json();
-
+    
             if (response.ok) {
                 setMessage('Password has been successfully reset.');
-                setNewPassword(''); // Clear the input field
             } else {
                 setError(data.message || 'Failed to reset password.');
             }
@@ -46,7 +45,7 @@ const ResetPassword = () => {
             setLoading(false);
         }
     };
-
+    
     return (
         <div style={{ maxWidth: '400px', margin: 'auto', padding: '1rem', textAlign: 'center' }}>
             <h2>Reset Password</h2>
