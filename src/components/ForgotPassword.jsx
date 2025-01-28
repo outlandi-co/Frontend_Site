@@ -33,7 +33,7 @@ const ForgotPassword = () => {
     console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/forgot-password`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/users/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -76,7 +76,7 @@ const ForgotPassword = () => {
     console.log("Token:", token);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/reset-password/${userId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/users/reset-password/${userId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword }),
