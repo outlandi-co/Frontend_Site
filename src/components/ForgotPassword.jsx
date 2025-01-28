@@ -13,18 +13,18 @@ const ForgotPassword = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search); // Extract query params
-    const token = params.get('token'); // Get 'token' param
-    const userId = params.get('userId'); // Get 'userId' param
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    const userId = params.get('userId');
   
     console.log("Extracted Token:", token);
     console.log("Extracted UserId:", userId);
   
     if (token && userId) {
-      setIsResetMode(true); // Switch to reset password form
+      setIsResetMode(true);
     }
   }, [location.search]);
-  
+    
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
