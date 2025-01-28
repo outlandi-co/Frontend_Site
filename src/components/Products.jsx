@@ -13,7 +13,7 @@ const Products = () => {
     const fetchProducts = async () => {
       try {
         // Fetch data from the backend
-        const response = await axios.get('https://backend-server-1wsz.onrender.com/api/products');
+        const response = await axios.get('https://backend-server-otcb.onrender.com/api/products');
         setProducts(response.data); // Set the fetched products in state
         setLoading(false); // Stop loading
       } catch (error) {
