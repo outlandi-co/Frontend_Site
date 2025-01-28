@@ -8,24 +8,29 @@ const ForgotPassword = () => {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isResetMode, setIsResetMode] = useState(false); // Determine if in reset mode
+  const [isResetMode, setIsResetMode] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // Check if there's a token and userId in the query parameters
-    const params = new URLSearchParams(location.search);
-    const token = params.get('token');
-    const userId = params.get('userId');
-
+    const params = new URLSearchParams(location.search); // Extract query params
+    const token = params.get('token'); // Get 'token' param
+    const userId = params.get('userId'); // Get 'userId' param
+  
+    console.log("Extracted Token:", token);
+    console.log("Extracted UserId:", userId);
+  
     if (token && userId) {
-      setIsResetMode(true);
+      setIsResetMode(true); // Switch to reset password form
     }
   }, [location.search]);
-
+  
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    console.log("Calling Forgot Password API with:", email);
+    console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/forgot-password`, {
@@ -35,6 +40,7 @@ const ForgotPassword = () => {
       });
 
       const data = await response.json();
+      console.log("Forgot Password Response:", data);
 
       if (response.ok) {
         setMessage('Password reset email sent. Please check your inbox.');
@@ -44,8 +50,8 @@ const ForgotPassword = () => {
         setMessage('');
       }
     } catch (err) {
-      console.error('Error occurred while sending the reset email:', err);
-      setError('Error occurred while sending the reset email. Please try again.');
+      console.error('Error while sending the reset email:', err);
+      setError('Failed to send reset email. Check console for details.');
       setMessage('');
     } finally {
       setLoading(false);
@@ -57,14 +63,17 @@ const ForgotPassword = () => {
     setLoading(true);
 
     const params = new URLSearchParams(location.search);
-    const token = params.get('token'); // Get the token from the URL
-    const userId = params.get('userId'); // Get the userId from the URL
+    const token = params.get('token');
+    const userId = params.get('userId');
 
     if (!token || !userId) {
       setError('Invalid or missing token and user ID.');
       setLoading(false);
       return;
     }
+
+    console.log("Resetting Password for User:", userId);
+    console.log("Token:", token);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/reset-password/${userId}`, {
@@ -74,18 +83,19 @@ const ForgotPassword = () => {
       });
 
       const data = await response.json();
+      console.log("Reset Password Response:", data);
 
       if (response.ok) {
         setMessage('Password has been successfully reset.');
         setError('');
-        navigate('/login'); // Redirect to login after successful reset
+        navigate('/login');
       } else {
         setError(data.message || 'Failed to reset password. Please try again.');
         setMessage('');
       }
     } catch (err) {
-      console.error('Error occurred while resetting the password:', err);
-      setError('Error occurred while resetting the password. Please try again.');
+      console.error('Error while resetting the password:', err);
+      setError('Failed to reset password. Check console for details.');
       setMessage('');
     } finally {
       setLoading(false);

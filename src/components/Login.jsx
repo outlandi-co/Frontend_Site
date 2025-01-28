@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+// eslint-disable-next-line no-unused-vars
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,30 +16,40 @@ const Login = () => {
         setError('');
         setMessage('');
 
+        // Log the password value to debug
+        console.log('Password value before sending the request:', password);
+
+        // Ensure password is a valid string
+        if (typeof password !== 'string' || password.trim() === '') {
+            setError('Password must be a valid string.');
+            setLoading(false);
+            return;
+        }
+
         try {
-            // Use the API URL from the environment variable
+            console.log('Sending login request:', { email, password });
+
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email, password }), // Ensure password is passed correctly
             });
 
             const data = await response.json();
 
             if (response.ok) {
+                console.log('Login successful:', data);
                 setMessage('Login successful!');
-                setError('');
-                localStorage.setItem('authToken', data.token); // Save token to localStorage
-                localStorage.setItem('userInfo', JSON.stringify(data)); // Optionally save user info
-                setTimeout(() => navigate('/profile'), 1000); // Redirect to profile after login
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('userInfo', JSON.stringify(data));
+                setTimeout(() => navigate('/profile'), 1000);
             } else {
-                setError(data.message || 'Failed to log in');
-                setMessage('');
+                console.error('Login failed:', data.message);
+                setError(data.message || 'Invalid email or password.');
             }
         } catch (err) {
-            console.error('Error occurred while logging in:', err);
-            setError('An error occurred while logging in. Please try again.');
-            setMessage('');
+            console.error('Error occurred during login:', err);
+            setError('A network error occurred. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -48,43 +58,30 @@ const Login = () => {
     return (
         <div style={{ maxWidth: '400px', margin: 'auto', padding: '1rem', textAlign: 'center' }}>
             <h2>Login</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {message && <p style={{ color: 'green' }}>{message}</p>}
+            {error && <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>}
+            {message && <p style={{ color: 'green', fontWeight: 'bold' }}>{message}</p>}
             <form onSubmit={handleLogin}>
                 <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem' }}>Email:</label>
+                    <label htmlFor="email">Email:</label>
                     <input
                         type="email"
                         id="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
                     />
                 </div>
                 <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem' }}>Password:</label>
+                    <label htmlFor="password">Password:</label>
                     <input
                         type="password"
                         id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        style={{ width: '100%', padding: '0.5rem', borderRadius: '5px', border: '1px solid #ccc' }}
                     />
                 </div>
-                <button
-                    type="submit"
-                    disabled={loading}
-                    style={{
-                        padding: '0.5rem 1rem',
-                        border: 'none',
-                        borderRadius: '5px',
-                        backgroundColor: loading ? '#ccc' : '#007BFF',
-                        color: 'white',
-                        cursor: loading ? 'not-allowed' : 'pointer',
-                    }}
-                >
+                <button type="submit" disabled={loading}>
                     {loading ? 'Logging in...' : 'Login'}
                 </button>
             </form>
