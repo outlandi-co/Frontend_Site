@@ -1,79 +1,48 @@
-// src/components/Profile.jsx
 // eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/authContext'; // Use AuthContext
+import { useAuth } from '../hooks/useAuth'; // ✅ Corrected path
+
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
-  const { user, logout } = useAuth(); // Get user and logout function from context
-  const [loading, setLoading] = useState(true);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // If user is already authenticated via context, skip fetching
-    if (user) {
-      setLoading(false);
-    } else {
-      setError('No user data found. Please log in.');
-      setLoading(false);
+    if (!user) {
+      setError("Unauthorized. Please log in again.");
+      navigate('/login');
     }
-  }, [user]);
+    setLoading(false);
+  }, [user, navigate]);
 
-  if (loading) {
-    return <p style={{ textAlign: 'center' }}>Loading profile...</p>;
-  }
-
-  if (error) {
-    return (
-      <div style={{ textAlign: 'center', padding: '20px' }}>
-        <p style={{ color: 'red' }}>{error}</p>
-        <button
-          onClick={() => {
-            logout(); // Log out if there's an error (clear context and localStorage)
-            window.location.href = '/login'; // Redirect to login page
-          }}
-          style={{
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-          }}
-        >
-          Go to Login
-        </button>
-      </div>
-    );
-  }
+  if (loading) return <p style={{ textAlign: 'center' }}>🔄 Loading profile...</p>;
+  if (error) return <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>;
 
   return (
     <div style={{ maxWidth: '600px', margin: '50px auto', padding: '20px', border: '1px solid #ddd', borderRadius: '5px' }}>
-      <h1 style={{ textAlign: 'center' }}>User Profile</h1>
-      {user ? (
-        <>
-          <p><strong>Name:</strong> {user.name}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Admin:</strong> {user.isAdmin ? 'Yes' : 'No'}</p>
-          <button
-            onClick={() => {
-              logout(); // Log out the user when they click the button
-              window.location.href = '/login'; // Redirect to login page after logout
-            }}
-            style={{
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '5px',
-              cursor: 'pointer',
-            }}
-          >
-            Logout
-          </button>
-        </>
-      ) : (
-        <p style={{ color: 'red', textAlign: 'center' }}>User data not available.</p>
-      )}
+      <h1 style={{ textAlign: 'center' }}>👋 Welcome, {user?.name || 'Guest'}!</h1>
+      <p style={{ textAlign: 'center' }}>Thank you for being part of our community.</p>
+
+      <button
+        onClick={() => {
+          logout();
+          navigate('/login');
+        }}
+        style={{
+          backgroundColor: '#dc3545',
+          color: 'white',
+          border: 'none',
+          padding: '10px 20px',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          marginTop: '10px',
+        }}
+      >
+        Logout
+      </button>
     </div>
   );
 };

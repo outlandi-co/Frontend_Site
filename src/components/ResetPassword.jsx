@@ -6,52 +6,57 @@ const ResetPassword = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    const token = searchParams.get('token'); // Token from URL
-    const userId = searchParams.get('userId'); // User ID from URL
+    // Extract token and userId from URL
+    const token = searchParams.get('token');
+    const userId = searchParams.get('userId');
+
     const [newPassword, setNewPassword] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    console.log('Using API URL:', import.meta.env.VITE_API_URL); // Debugging API URL
+    // ✅ Ensure API URL is correctly formatted
+    const apiUrl = `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/users/reset-password/${userId}`;
+    console.log("🔗 Using API URL:", apiUrl);
 
     const handleResetPassword = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
         setMessage('');
-
+    
         if (!token || !userId) {
-            setError('Invalid or missing token and user ID.');
+            setError('❌ Invalid or missing reset token.');
             setLoading(false);
             return;
         }
-
+    
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/reset-password/${userId}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/users/reset-password/${userId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token, newPassword }),
+                body: JSON.stringify({ token: String(token), newPassword }), // ✅ Ensure token is sent as a string
             });
-
+    
             const data = await response.json();
-
+            console.log("📨 Reset Password API Response:", data);
+    
             if (response.ok) {
-                setMessage('Password has been successfully reset.');
+                setMessage('✅ Password successfully reset.');
                 setError('');
-                setNewPassword(''); // Clear the input field
-                setTimeout(() => navigate('/login'), 3000); // Redirect after 3 seconds
+                setNewPassword('');
+                setTimeout(() => navigate('/login'), 3000);
             } else {
-                setError(data.message || 'Failed to reset password. Please try again.');
+                setError(`❌ ${data.message || 'Failed to reset password. Please try again.'}`);
             }
         } catch (err) {
-            console.error('Error occurred while resetting the password:', err);
-            setError('An error occurred while resetting the password. Please try again.');
+            console.error('❌ Error while resetting the password:', err);
+            setError('❌ An error occurred while resetting the password. Please try again.');
         } finally {
             setLoading(false);
         }
     };
-
+    
     return (
         <div style={{ maxWidth: '400px', margin: 'auto', padding: '1rem', textAlign: 'center' }}>
             <h2>Reset Password</h2>

@@ -1,91 +1,45 @@
-// eslint-disable-next-line no-unused-vars
-import React, { useState } from 'react';
+/* eslint-disable no-unused-vars */
+
+import React from 'react';
+import { useState } from 'react';
+import api from '../api/api';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [message, setMessage] = useState('');
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError('');
-        setMessage('');
-
-        // Log the password value to debug
-        console.log('Password value before sending the request:', password);
-
-        // Ensure password is a valid string
-        if (typeof password !== 'string' || password.trim() === '') {
-            setError('Password must be a valid string.');
-            setLoading(false);
-            return;
-        }
-
+    
         try {
-            console.log('Sending login request:', { email, password });
-
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }), // Ensure password is passed correctly
+            const response = await fetch("http://localhost:5001/api/users/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
             });
-
+    
             const data = await response.json();
-
-            if (response.ok) {
-                console.log('Login successful:', data);
-                setMessage('Login successful!');
-                localStorage.setItem('authToken', data.token);
-                localStorage.setItem('userInfo', JSON.stringify(data));
-                setTimeout(() => navigate('/profile'), 1000);
-            } else {
-                console.error('Login failed:', data.message);
-                setError(data.message || 'Invalid email or password.');
+    
+            if (!response.ok) {
+                throw new Error(data.message || "Login failed");
             }
-        } catch (err) {
-            console.error('Error occurred during login:', err);
-            setError('A network error occurred. Please try again later.');
-        } finally {
-            setLoading(false);
+    
+            localStorage.setItem("token", data.token); // Store token
+            console.log("✅ Login successful, token stored:", data.token);
+            window.location.href = "/dashboard"; // Redirect to dashboard
+        } catch (error) {
+            console.error("🔴 Login failed:", error);
         }
     };
-
+    
     return (
-        <div style={{ maxWidth: '400px', margin: 'auto', padding: '1rem', textAlign: 'center' }}>
-            <h2>Login</h2>
-            {error && <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>}
-            {message && <p style={{ color: 'green', fontWeight: 'bold' }}>{message}</p>}
-            <form onSubmit={handleLogin}>
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="email">Email:</label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="password">Password:</label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit" disabled={loading}>
-                    {loading ? 'Logging in...' : 'Login'}
-                </button>
-            </form>
-        </div>
+        <form onSubmit={handleLogin}>
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" required />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
+            <button type="submit">Login</button>
+        </form>
     );
 };
 

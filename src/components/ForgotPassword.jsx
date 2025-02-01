@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { forgotPassword, resetPassword } from '../services/userService'; // ✅ Import API functions
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -17,8 +18,8 @@ const ForgotPassword = () => {
         const token = params.get('token');
         const userId = params.get('userId');
 
-        console.log("Extracted Token:", token);
-        console.log("Extracted UserId:", userId);
+        console.log("🔍 Extracted Token:", token);
+        console.log("🔍 Extracted UserId:", userId);
 
         if (token && userId) {
             setIsResetMode(true);
@@ -26,37 +27,31 @@ const ForgotPassword = () => {
     }, [location.search]);
 
     const handleForgotPassword = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-        setMessage('');
-
-        console.log("Calling Forgot Password API with:", email);
-        console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
-
-        try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/users/forgot-password`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email }),
-            });
-
-            const data = await response.json();
-            console.log("Forgot Password Response:", data);
-
-            if (response.ok) {
-                setMessage('Password reset email sent. Please check your inbox.');
-            } else {
-                throw new Error(data.message || 'Failed to send reset email. Please try again.');
-            }
-        } catch (err) {
-            console.error('Error while sending the reset email:', err);
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
+      e.preventDefault();
+      setLoading(true);
+      setError('');
+      setMessage('');
+  
+      console.log("📨 Calling Forgot Password API with:", email);
+  
+      try {
+          const response = await forgotPassword(email);
+          console.log("✅ Forgot Password Response:", response);
+  
+          // ✅ Corrected handling: Only show message, don't throw an error
+          if (response.message === "Reset email sent") {
+              setMessage('✅ Password reset email sent. Please check your inbox.');
+          } else {
+              setError(response.message || 'Something went wrong.');
+          }
+      } catch (err) {
+          console.error("❌ Forgot Password Error:", err);
+          setError(err.message || 'Failed to request password reset.');
+      } finally {
+          setLoading(false);
+      }
+  };
+  
     const handleResetPassword = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -68,33 +63,33 @@ const ForgotPassword = () => {
         const userId = params.get('userId');
 
         if (!token || !userId) {
-            setError('Invalid or missing reset link. Please request a new reset email.');
+            setError("❌ Invalid or missing reset link. Please request a new reset email.");
             setLoading(false);
             return;
         }
 
-        console.log("Resetting Password for User:", userId);
-        console.log("Token:", token);
+        if (newPassword.length < 6) {
+            setError("❌ Password must be at least 6 characters.");
+            setLoading(false);
+            return;
+        }
+
+        console.log("🔑 Resetting Password for User:", userId);
+        console.log("🔐 Token:", token);
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/users/reset-password/${userId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token, newPassword }),
-            });
+            const response = await resetPassword(userId, token, newPassword); // ✅ Use API function
+            console.log("✅ Reset Password Response:", response);
 
-            const data = await response.json();
-            console.log("Reset Password Response:", data);
-
-            if (response.ok) {
-                setMessage('Password has been successfully reset. Redirecting to login...');
+            if (response.success) {
+                setMessage("✅ Password reset successful! Redirecting to login...");
                 setTimeout(() => navigate('/login'), 3000);
             } else {
-                throw new Error(data.message || 'Failed to reset password. Please try again.');
+                throw new Error(response.message || "Failed to reset password.");
             }
         } catch (err) {
-            console.error('Error while resetting the password:', err);
-            setError(err.message);
+            console.error("❌ Reset Password Error:", err);
+            setError(err.message || "An error occurred. Please try again.");
         } finally {
             setLoading(false);
         }

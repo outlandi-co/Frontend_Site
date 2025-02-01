@@ -1,13 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import App from './App'; // Ensure this matches your `default` export from App.jsx
-import './index.css'; // Your global CSS file
+import App from './App';
+import AuthProvider from './components/context/AuthContextProvider'; // ✅ Correct import
+import CartProvider from './components/context/cartContext';
+import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
+  <React.StrictMode>
+    <AuthProvider> {/* ✅ Wrap the entire App inside AuthProvider */}
+      <CartProvider>
         <BrowserRouter>
-            <App />
+          <App />
         </BrowserRouter>
-    </React.StrictMode>
+      </CartProvider>
+    </AuthProvider>
+  </React.StrictMode>
 );

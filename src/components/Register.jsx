@@ -1,45 +1,55 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
+import api from '../services/api'; // Import Axios API instance
 
 const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
+    // ✅ Email Validation
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
     };
 
-    const validatePassword = (password) => {
-        return password.length >= 8; // Minimum 8 characters
-    };
+    // ✅ Password Validation (Minimum 8 characters)
+    const validatePassword = (password) => password.length >= 8;
 
+    // ✅ Form Submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Input validation
-        if (!name || !email || !password || !confirmPassword) {
-            setError('All fields are required');
+        // Trim user inputs to prevent validation errors
+        const trimmedName = name.trim();
+        const trimmedEmail = email.trim().toLowerCase();
+        const trimmedUsername = username.trim().toLowerCase();
+        const trimmedPassword = password.trim();
+        const trimmedConfirmPassword = confirmPassword.trim();
+
+        // ✅ Validate Inputs
+        if (!trimmedName || !trimmedEmail || !trimmedUsername || !trimmedPassword || !trimmedConfirmPassword) {
+            setError('All fields are required.');
             return;
         }
 
-        if (!validateEmail(email)) {
-            setError('Invalid email format');
+        if (!validateEmail(trimmedEmail)) {
+            setError('Invalid email format.');
             return;
         }
 
-        if (!validatePassword(password)) {
-            setError('Password must be at least 8 characters long');
+        if (!validatePassword(trimmedPassword)) {
+            setError('Password must be at least 8 characters long.');
             return;
         }
 
-        if (password !== confirmPassword) {
-            setError('Passwords do not match');
+        if (trimmedPassword !== trimmedConfirmPassword) {
+            setError('Passwords do not match.');
             return;
         }
 
@@ -48,30 +58,27 @@ const Register = () => {
         setLoading(true);
 
         try {
-            console.log("Submitting registration form..."); // Debugging log
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/users/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, email, password }),
+            console.log("🔄 Submitting registration form...");
+
+            // ✅ Use Axios instance from api.js
+            const response = await api.post('/users/register', {
+                name: trimmedName,
+                email: trimmedEmail,
+                username: trimmedUsername, // Ensure username is included
+                password: trimmedPassword,
             });
 
-            const data = await response.json();
+            console.log("✅ Registration successful:", response.data);
 
-            if (!response.ok) {
-                console.error("Registration API Error:", data.message); // Debugging log
-                throw new Error(data.message || 'Something went wrong');
-            }
-
-            setMessage('Registration successful!');
+            setMessage('Registration successful! Please log in.');
             setName('');
             setEmail('');
+            setUsername('');
             setPassword('');
             setConfirmPassword('');
-        } catch (error) {
-            console.error("Error during registration:", error); // Debugging log
-            setError(error.message);
+        } catch (err) {
+            console.error("❌ Registration error:", err.response?.data?.message || err.message);
+            setError(err.response?.data?.message || 'Registration failed. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -106,6 +113,19 @@ const Register = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     aria-label="Enter your email"
+                    style={{ width: '100%', padding: '8px', margin: '8px 0' }}
+                />
+            </div>
+
+            <div style={{ marginBottom: '15px' }}>
+                <label htmlFor="username">Username:</label>
+                <input
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    aria-label="Enter your username"
                     style={{ width: '100%', padding: '8px', margin: '8px 0' }}
                 />
             </div>

@@ -1,29 +1,15 @@
-// src/components/LogOut.jsx
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/authContext'; // Import the useAuth hook
+import { logoutUser } from '../api/api';
 
 const LogOut = () => {
-  const navigate = useNavigate();
-  const { logout } = useAuth(); // Use the logout function from authContext
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    // Clear the token from local storage
-    localStorage.removeItem('token');
+    const handleLogout = async () => {
+        await logoutUser();
+        navigate('/login'); // Redirect after logout
+    };
 
-    // Call the logout function to reset user context or state
-    logout(); 
-
-    // Redirect the user to the login page
-    navigate('/login');
-  }, [navigate, logout]);
-
-  return (
-    <div style={{ textAlign: 'center' }}>
-      <h2>Logging out...</h2>
-      <p>You will be redirected to the login page shortly.</p>
-    </div>
-  );
+    return <button onClick={handleLogout}>Logout</button>;
 };
 
 export default LogOut;
