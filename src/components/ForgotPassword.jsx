@@ -17,15 +17,15 @@ const ForgotPassword = () => {
         const params = new URLSearchParams(location.search);
         const token = params.get('token');
         const userId = params.get('userId');
-
+    
         console.log("🔍 Extracted Token:", token);
         console.log("🔍 Extracted UserId:", userId);
-
+    
         if (token && userId) {
             setIsResetMode(true);
         }
     }, [location.search]);
-
+    
     const handleForgotPassword = async (e) => {
       e.preventDefault();
       setLoading(true);

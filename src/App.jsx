@@ -1,14 +1,15 @@
-// eslint-disable-next-line no-unused-vars
+
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import Products from './components/Products';
 import CartPage from './components/CartPage';
 import CheckoutPage from './components/CheckoutPage';
 import OrderConfirmation from './components/OrderConfirmation';
 import CartWidget from './components/CartWidget';
 import CartProvider from './components/context/cartContext';
-import AuthProvider from './components/context/AuthContextProvider'; // ✅ Correct import
-import { useAuth } from './hooks/useAuth'; // ✅ Ensure correct import
+import AuthProvider from './components/context/AuthContextProvider'; 
+import { useAuth } from './hooks/useAuth'; 
 import Register from './components/Register';
 import Login from './components/Login';
 import ForgotPassword from './components/ForgotPassword';
@@ -26,14 +27,17 @@ const App = () => {
     );
 };
 
-// ✅ Extracted for cleaner component structure
 const MainContent = () => {
-    const { user, setUser } = useAuth(); // ✅ Extract `setUser`
+    const { user, logoutUser } = useAuth();
+    const navigate = useNavigate();
 
-    // ✅ Define the logout function
-    const logout = () => {
-        setUser(null); // ✅ Clears user state
-        window.location.reload(); // ✅ Ensure logout takes effect
+    const handleLogout = async () => {
+        try {
+            await logoutUser();
+            navigate('/login');
+        } catch (error) {
+            console.error("❌ Logout failed:", error);
+        }
     };
 
     return (
@@ -47,7 +51,7 @@ const MainContent = () => {
                     {user ? (
                         <>
                             <Link to="/profile" style={navLinkStyle}>Profile</Link>
-                            <button onClick={logout} style={logoutBtnStyle}>Logout</button> {/* ✅ Now defined */}
+                            <button onClick={handleLogout} style={logoutBtnStyle}>Logout</button>
                         </>
                     ) : (
                         <>
@@ -72,11 +76,31 @@ const MainContent = () => {
                     <Route path="/register" element={<Register />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/profile" element={<ProtectedRoute component={Profile} />} />
                 </Routes>
             </main>
         </div>
     );
+};
+
+// ✅ Protects Profile Route: Redirects to login if not authenticated
+const ProtectedRoute = ({ component: Component }) => {
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
+    React.useEffect(() => {
+        if (!user) {
+            console.warn("🔴 Unauthorized access! Redirecting to login...");
+            navigate('/login');
+        }
+    }, [user, navigate]);
+
+    return user ? <Component /> : null;
+};
+
+// ✅ Fix: Add PropTypes validation for ProtectedRoute
+ProtectedRoute.propTypes = {
+    component: PropTypes.elementType.isRequired,
 };
 
 // ✅ Styles for links & buttons

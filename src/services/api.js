@@ -1,17 +1,19 @@
 import axios from 'axios';
 
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
-    headers: { 'Content-Type': 'application/json' },
-    withCredentials: true, // ✅ Ensures cookies (JWT) are sent with requests
+    baseURL: "http://localhost:5001/api",
+    withCredentials: true,  // ✅ Ensures cookies are sent
+    headers: { "Content-Type": "application/json" }
 });
 
-// ✅ Add an interceptor to check response errors globally
+// ✅ Interceptor to handle Unauthorized Responses (401)
 api.interceptors.response.use(
-    response => response, 
-    error => {
+    (response) => response,
+    (error) => {
         if (error.response && error.response.status === 401) {
-            console.warn("⚠️ Unauthorized - Redirecting to Login");
+            console.warn("⚠️ Unauthorized! Redirecting to login.");
+            document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             window.location.href = "/login";
         }
         return Promise.reject(error);
